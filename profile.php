@@ -1,10 +1,11 @@
 <?php
 include("db.php");
 
+//$userID = '27';
 $userID = $_POST['userID'];
 $DataList = [];
-$UserListData = [];
 $newArr = [];
+$UserListData = [];
 $msg = "fail";
 //$userID = $_POST['userID'];
 if (!empty($userID)) {
@@ -12,7 +13,6 @@ if (!empty($userID)) {
 	if (!empty($userSql)) {
 		while ($arr = mysqli_fetch_array($userSql, MYSQLI_ASSOC)) {
 			foreach ($arr as $key => $val) {
-//		echo $key . ' ' . $val;
 				$DataList[$key] = $val;
 			}
 			array_push($newArr, $DataList);
@@ -27,6 +27,7 @@ if (!empty($userID)) {
 			$UserListData[$key]['Birth'] = date('d/m/Y', strtotime($val['BirthDate']));
 		}
 	}
+
 }
 if(!empty($UserListData)){
 	$msg = "success";

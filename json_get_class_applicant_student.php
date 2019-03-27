@@ -5,7 +5,7 @@ $userID = $_POST['userID'];
 $today = date('Y-m-d' . ' 00:00:00');
 
 $sql = mysqli_query($con, "SELECT * FROM student_show_course_paid
-									WHERE UserID = '" . $userID . "' AND end >= '" . $today . "' AND Active <> -1");
+									WHERE UserID = '" . $userID . "' AND end >= '" . $today . "'");
 
 $DataList = [];
 $newArr = [];

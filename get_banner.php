@@ -2,7 +2,7 @@
 
 include("db.php");
 
-$sql = mysqli_query($con,"SELECT ad_id as id, ad_title as title, ad_desc as description, ad_banner as banner FROM advertising WHERE Active = '1'");
+$sql = mysqli_query($con,"SELECT ad_id as id, ad_title as title, ad_desc as description, ad_banner as banner, ad_banner_detail as posterUrl FROM advertising WHERE Active = '1'");
 //echo "SELECT ad_id as id, ad_title as title, ad_desc as description, ad_banner as banner FROM advertising WHERE Active = '0'";
 
 $DataList = [];
@@ -22,6 +22,7 @@ foreach($newArr as $key => $val){
 	$BannerListData[$key]['title'] = $val['title'];
 	$BannerListData[$key]['desc'] = $val['description'];
 	$BannerListData[$key]['imgUrl'] = $val['banner'];
+	$BannerListData[$key]['posterUrl'] = $val['posterUrl'];
 
 }
 

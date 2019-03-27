@@ -78,8 +78,8 @@ if (!empty($eventID) && !empty($userID)) {
 
 						$updateUserHasStyleSql = "UPDATE user_has_stylepack SET times = '" . $timeUpdate . "' WHERE id = '" . $IdAndTimeListData['id'] . "'";
 						if ($con->query($updateUserHasStyleSql)) {
-							$insertPaymentStyleTxnSql = "INSERT INTO paymentstyletxn (user_UserID, stylepack_id, times, BuyUse, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy, user_has_stylepack_id, coin)
-                    			VALUES ('" . $userID . "','" . $IdAndTimeListData['stylepack_id'] . "',1,'U','" . $date . "','" . $userID . "','" . $date . "','" . $userID . "','" . $IdAndTimeListData['id'] . "',0)";
+							$insertPaymentStyleTxnSql = "INSERT INTO paymentstyletxn (user_UserID, stylepack_id, times, BuyUse, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy, user_has_stylepack_id, coin, eventID)
+                    			VALUES ('" . $userID . "','" . $IdAndTimeListData['stylepack_id'] . "',1,'U','" . $date . "','" . $userID . "','" . $date . "','" . $userID . "','" . $IdAndTimeListData['id'] . "',0,'" . $eventID . "')";
 							if ($con->query($insertPaymentStyleTxnSql)) {
 								$msg = 'success';
 							}
@@ -131,8 +131,8 @@ if (!empty($eventID) && !empty($userID)) {
 
 					$updateUserHasStyleSql = "UPDATE user_has_stylepack SET times = '" . $timeUpdate . "' WHERE id = '" . $IdAndTimeListData['id'] . "'";
 					if ($con->query($updateUserHasStyleSql)) {
-						$insertPaymentStyleTxnSql = "INSERT INTO paymentstyletxn (user_UserID, stylepack_id, times, BuyUse, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy, user_has_stylepack_id, coin)
-                    			VALUES ('" . $userID . "','" . $IdAndTimeListData['stylepack_id'] . "',1,'U','" . $date . "','" . $userID . "','" . $date . "','" . $userID . "','" . $IdAndTimeListData['id'] . "',0)";
+						$insertPaymentStyleTxnSql = "INSERT INTO paymentstyletxn (user_UserID, stylepack_id, times, BuyUse, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy, user_has_stylepack_id, coin, eventID)
+                    			VALUES ('" . $userID . "','" . $IdAndTimeListData['stylepack_id'] . "',1,'U','" . $date . "','" . $userID . "','" . $date . "','" . $userID . "','" . $IdAndTimeListData['id'] . "',0,'" . $eventID . "')";
 						if ($con->query($insertPaymentStyleTxnSql)) {
 							$msg = 'success';
 						}
