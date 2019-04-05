@@ -9,7 +9,7 @@ $newArr = [];
 $StyleListData = [];
 
 $DataList['courseStyleID'] = '0';
-$DataList['courseStyleName'] = 'ALL';
+$DataList['courseStyleName'] = 'ALL STYLE';
 $DataList['courseStyleDesc'] = 'All Style';
 $DataList['courseStyleImage'] = 'imgBanner/bg_all.png';
 array_push($newArr, $DataList);
