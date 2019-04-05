@@ -21,9 +21,23 @@ $email_encrypt = $_GET['email'];
 
 	<div id="highlighted" class="hl-basic hidden-xs">
 		<div class="container-fluid">
-			<div class="row">
-				<div class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-10 col-lg-offset-2">
-					<h1>Forgot Password</h1>
+			<div class="col-md-12" style="padding: 24px 0">
+				<div class="row">
+					<div class="col-md-3">
+					</div>
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-md-2">
+								<img src="image/logo.png" width="100" height="100">
+							</div>
+							<div class="col-md-10">
+								<h1>Forgot Password</h1>
+							</div>
+
+						</div>
+					</div>
+					<div class="col-md-3">
+					</div>
 				</div>
 			</div>
 		</div>
@@ -114,7 +128,7 @@ $email_encrypt = $_GET['email'];
                             } else if (data === 'Something wrong happened! Please try again') {
                                 $('.showFail').show();
                                 return false;
-                            } else{
+                            } else {
                                 alert(data);
                             }
                         }
@@ -132,7 +146,7 @@ $email_encrypt = $_GET['email'];
 <style>
 	#highlighted {
 		position: relative;
-		background-color: #DC143C;
+		background-color: #6C7B8A;
 	}
 
 	@media (min-width: 992px)
@@ -297,8 +311,8 @@ $email_encrypt = $_GET['email'];
 
 			.btn-primary {
 				color: #fff;
-				background-color: #DC143C;
-				border-color: #ea3e10;
+				background-color: #6C7B8A;
+				border-color: #6C7B8A;
 				width: 100%;
 			}
 

@@ -94,7 +94,7 @@ FROM user WHERE User = '" . $username . "' AND facebook_id = null");
 					include_once "PHPMailer/PHPMailer.php";
 					$mail = new PHPMailer();
 					try {
-						$mail->setFrom('hello@dancing.com');
+						$mail->setFrom('info@beatsbox.com');
 					} catch (\PHPMailer\PHPMailer\Exception $e) {
 					}
 					$mail->addAddress($email, $username);

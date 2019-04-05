@@ -25,7 +25,7 @@ $sql = mysqli_query($con,"SELECT UserID, User, Email, isEmailConfirmed, GroupID,
 $DataList = [];
 $UserListData = [];
 $newArr = [];
-$msg = "No User";
+$msg = " Username or Password Invalid";
 while ($arr = mysqli_fetch_array($sql, MYSQLI_ASSOC)) {
 	foreach ($arr as $key => $val) {
 //		echo $key . ' ' . $val;
