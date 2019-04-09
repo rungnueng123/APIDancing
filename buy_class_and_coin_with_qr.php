@@ -5,13 +5,15 @@ include("db.php");
 $userID = $_POST['userID'];
 $eventID = $_POST['eventID'];
 $coin = $_POST['coin'];
+$coinHave = $_POST['coinHave'];
+$coinBuy = $_POST['coin'] - $_POST['coinHave'];
 $baht = $_POST['baht'];
 $bahtAddCoinTxn = -$baht;
 $date = date('Y-m-d H:i:s');
 $msg = 'Something wrong happened! Please try again!';
 
 $addCoinTxnSql = "INSERT INTO cointxn (UserID, TxnDate, Amount, CoinAmt, BuySell, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy)
-                    VALUES ('" . $userID . "','" . $date . "','" . $bahtAddCoinTxn . "','" . $coin . "','Q','" . $date . "','" . $userID . "','" . $date . "','" . $userID . "')";
+                    VALUES ('" . $userID . "','" . $date . "','" . $bahtAddCoinTxn . "','" . $coinBuy . "','Q','" . $date . "','" . $userID . "','" . $date . "','" . $userID . "')";
 
 if ($con->query($addCoinTxnSql)) {
 	$userSelectCoinSql = mysqli_query($con, "SELECT CoinAmt FROM user WHERE UserID = '" . $userID . "'");
@@ -20,7 +22,7 @@ if ($con->query($addCoinTxnSql)) {
 			$coinAmt = $val;
 		}
 	}
-	$coinUpdate = $coinAmt + $coin;
+	$coinUpdate = $coin;
 	$userUpdateCoinSql = "
 	   UPDATE user
 	   SET CoinAmt = '" . $coinUpdate . "'
@@ -96,7 +98,7 @@ if ($con->query($addCoinTxnSql)) {
 					}
 				}
 			}
-		}else{
+		} else {
 			$addStudentSchedSql = "INSERT INTO studentsched (eventID, payType, coinAmt, times, Active, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy, registration_RegisID)
                     VALUES ('" . $eventID . "',1,'" . $coin . "',0,1,'" . $date . "','" . $userID . "','" . $date . "','" . $userID . "','" . $checkUserListData['RegisID'] . "')";
 			if ($con->query($addStudentSchedSql)) {
