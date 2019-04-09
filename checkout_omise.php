@@ -13,6 +13,7 @@ $bath = $_POST['bath'];
 $userID = $_POST['userID'];
 $coinPackID = $_POST['coinPackID'];
 $coin = $_POST['coin'];
+$coinBuy = $_POST['coinBuy'];
 $realBaht = $_POST['realBaht'];
 $namePack = $_POST["namepack"];
 date_default_timezone_set('Asia/Bangkok');
@@ -68,7 +69,11 @@ if (!empty($coinPackID)) {
 		}
 	}
 
-	$coinUpdate = $coinAmt + $coin;
+	if (!empty($coinBuy)) {
+		$coinUpdate = $coinAmt + $coinBuy;
+	} else {
+		$coinUpdate = $coinAmt + $coin;
+	}
 
 	$userUpdateCoinSql = "
    UPDATE user
@@ -126,7 +131,7 @@ if (!empty($coinPackID)) {
 				</style>
 			</body>
 			</html>';
-	}else{
+	} else {
 		echo '<html>
 			<head>
 			</head>
@@ -191,44 +196,86 @@ if (!empty($eventID)) {
 		$status = 'Fail';
 	}
 
-	$charge = (array)$chargeCreate;
+	if (!empty($coinBuy)) {
+		$coinUpdate = $coinAmt + $coinBuy;
+	} else {
+		$coinUpdate = $coinAmt + $coin;
+	}
 
-	$myJson = json_encode(array('status' => $status, 'data' => json_encode($charge)));
+	$userUpdateCoinSql = "
+   UPDATE user
+   SET CoinAmt = 0
+   WHERE UserID = '" . $userID . "'
+   ";
+
+	if ($con->query($userUpdateCoinSql)) {
+
+		$charge = (array)$chargeCreate;
+
+		$myJson = json_encode(array('status' => $status, 'data' => json_encode($charge)));
 //echo $myJson;
 
-	$Amount = $realBaht * -1;
-	$coinTxnInsertSql = "INSERT INTO cointxn (UserID, TxnDate, Amount, CoinAmt, BuySell, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy)
-                    VALUES ('" . $userID . "','" . $date . "','" . $Amount . "','" . $coin . "','B','" . $date . "','" . $userID . "','" . $date . "','" . $userID . "')";
+		$Amount = $realBaht * -1;
+		$coinTxnInsertSql = "INSERT INTO cointxn (UserID, TxnDate, Amount, CoinAmt, BuySell, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy)
+                    VALUES ('" . $userID . "','" . $date . "','" . $Amount . "','" . $coinBuy . "','B','" . $date . "','" . $userID . "','" . $date . "','" . $userID . "')";
 
-	if ($con->query($coinTxnInsertSql)) {
-		$TxnID = mysqli_insert_id($con);
-		$paymentTxnInsertSql = "INSERT INTO paymenttxn (user_UserID, jsondata, cointxn_TxnID, CreatedDate, UpdatedDate)
+		if ($con->query($coinTxnInsertSql)) {
+			$TxnID = mysqli_insert_id($con);
+			$paymentTxnInsertSql = "INSERT INTO paymenttxn (user_UserID, jsondata, cointxn_TxnID, CreatedDate, UpdatedDate)
                     VALUES ('" . $userID . "','" . $myJson . "','" . $TxnID . "','" . $date . "','" . $date . "')";
-		if ($con->query($paymentTxnInsertSql)) {
-			$checkUserSql = mysqli_query($con, "SELECT RegisID
+			if ($con->query($paymentTxnInsertSql)) {
+				$checkUserSql = mysqli_query($con, "SELECT RegisID
 											FROM registration WHERE user_UserID = '" . $userID . "'");
-			$DataList = [];
-			$checkUserListData = [];
-			$newArr = [];
-			while ($arr = mysqli_fetch_array($checkUserSql, MYSQLI_ASSOC)) {
-				foreach ($arr as $key => $val) {
+				$DataList = [];
+				$checkUserListData = [];
+				$newArr = [];
+				while ($arr = mysqli_fetch_array($checkUserSql, MYSQLI_ASSOC)) {
+					foreach ($arr as $key => $val) {
 //		echo $key . ' ' . $val;
-					$DataList[$key] = $val;
+						$DataList[$key] = $val;
+					}
+					array_push($newArr, $DataList);
 				}
-				array_push($newArr, $DataList);
-			}
-			foreach ($newArr as $val) {
-				$checkUserListData = $val;
-			}
-			if (empty($checkUserListData)) {
-				$addRegisClassSql = "INSERT INTO registration (CoinAmt, Times, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy, user_UserID)
+				foreach ($newArr as $val) {
+					$checkUserListData = $val;
+				}
+				if (empty($checkUserListData)) {
+					$addRegisClassSql = "INSERT INTO registration (CoinAmt, Times, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy, user_UserID)
                     VALUES (0,0,'" . $date . "','" . $userID . "','" . $date . "','" . $userID . "','" . $userID . "')";
-				if ($con->query($addRegisClassSql)) {
-					$regisID = mysqli_insert_id($con);
-					$addStudentSchedSql = "INSERT INTO studentsched (eventID, payType, coinAmt, times, Active, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy, registration_RegisID)
+					if ($con->query($addRegisClassSql)) {
+						$regisID = mysqli_insert_id($con);
+						$addStudentSchedSql = "INSERT INTO studentsched (eventID, payType, coinAmt, times, Active, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy, registration_RegisID)
                     VALUES ('" . $eventID . "',1,'" . $coin . "',0,1,'" . $date . "','" . $userID . "','" . $date . "','" . $userID . "','" . $regisID . "')";
+						if ($con->query($addStudentSchedSql)) {
+							$sumCoinAmtSql = mysqli_query($con, "SELECT SUM(coinAmt) as sumCoin FROM studentsched WHERE registration_RegisID = '" . $regisID .
+								"'");
+							$DataList1 = [];
+							$newArr1 = [];
+							$sumCoinListData = [];
+							while ($arr = mysqli_fetch_array($sumCoinAmtSql, MYSQLI_ASSOC)) {
+								foreach ($arr as $key => $val) {
+									$DataList1[$key] = $val;
+								}
+								array_push($newArr1, $DataList1);
+							}
+							foreach ($newArr1 as $val) {
+								$sumCoinListData = $val;
+							}
+							if (!empty($sumCoinListData)) {
+								$updateRegisSql = "UPDATE registration SET CoinAmt = '" . $sumCoinListData['sumCoin'] . "' WHERE RegisID = '" . $regisID . "'";
+								if ($con->query($updateRegisSql)) {
+									$addRegisClassSql = mysqli_query($con, "INSERT INTO cointxn (UserID, TxnDate, Amount, CoinAmt, BuySell, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy)
+                   							 VALUES ('" . $userID . "','" . $date . "','" . $realBaht . "','" . $coin . "','S','" . $date . "','" . $userID . "','" . $date . "','" . $userID . "')");
+									$msg = 'success';
+								}
+							}
+						}
+					}
+				} else {
+					$addStudentSchedSql = "INSERT INTO studentsched (eventID, payType, coinAmt, times, Active, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy, registration_RegisID)
+                    VALUES ('" . $eventID . "',1,'" . $coin . "',0,1,'" . $date . "','" . $userID . "','" . $date . "','" . $userID . "','" . $checkUserListData['RegisID'] . "')";
 					if ($con->query($addStudentSchedSql)) {
-						$sumCoinAmtSql = mysqli_query($con, "SELECT SUM(coinAmt) as sumCoin FROM studentsched WHERE registration_RegisID = '" . $regisID .
+						$sumCoinAmtSql = mysqli_query($con, "SELECT SUM(coinAmt) as sumCoin FROM studentsched WHERE registration_RegisID = '" . $checkUserListData['RegisID'] .
 							"'");
 						$DataList1 = [];
 						$newArr1 = [];
@@ -243,39 +290,12 @@ if (!empty($eventID)) {
 							$sumCoinListData = $val;
 						}
 						if (!empty($sumCoinListData)) {
-							$updateRegisSql = "UPDATE registration SET CoinAmt = '" . $sumCoinListData['sumCoin'] . "' WHERE RegisID = '" . $regisID . "'";
+							$updateRegisSql = "UPDATE registration SET CoinAmt = '" . $sumCoinListData['sumCoin'] . "' WHERE RegisID = '" . $checkUserListData['RegisID'] . "'";
 							if ($con->query($updateRegisSql)) {
 								$addRegisClassSql = mysqli_query($con, "INSERT INTO cointxn (UserID, TxnDate, Amount, CoinAmt, BuySell, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy)
                    							 VALUES ('" . $userID . "','" . $date . "','" . $realBaht . "','" . $coin . "','S','" . $date . "','" . $userID . "','" . $date . "','" . $userID . "')");
 								$msg = 'success';
 							}
-						}
-					}
-				}
-			} else {
-				$addStudentSchedSql = "INSERT INTO studentsched (eventID, payType, coinAmt, times, Active, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy, registration_RegisID)
-                    VALUES ('" . $eventID . "',1,'" . $coin . "',0,1,'" . $date . "','" . $userID . "','" . $date . "','" . $userID . "','" . $checkUserListData['RegisID'] . "')";
-				if ($con->query($addStudentSchedSql)) {
-					$sumCoinAmtSql = mysqli_query($con, "SELECT SUM(coinAmt) as sumCoin FROM studentsched WHERE registration_RegisID = '" . $checkUserListData['RegisID'] .
-						"'");
-					$DataList1 = [];
-					$newArr1 = [];
-					$sumCoinListData = [];
-					while ($arr = mysqli_fetch_array($sumCoinAmtSql, MYSQLI_ASSOC)) {
-						foreach ($arr as $key => $val) {
-							$DataList1[$key] = $val;
-						}
-						array_push($newArr1, $DataList1);
-					}
-					foreach ($newArr1 as $val) {
-						$sumCoinListData = $val;
-					}
-					if (!empty($sumCoinListData)) {
-						$updateRegisSql = "UPDATE registration SET CoinAmt = '" . $sumCoinListData['sumCoin'] . "' WHERE RegisID = '" . $checkUserListData['RegisID'] . "'";
-						if ($con->query($updateRegisSql)) {
-							$addRegisClassSql = mysqli_query($con, "INSERT INTO cointxn (UserID, TxnDate, Amount, CoinAmt, BuySell, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy)
-                   							 VALUES ('" . $userID . "','" . $date . "','" . $realBaht . "','" . $coin . "','S','" . $date . "','" . $userID . "','" . $date . "','" . $userID . "')");
-							$msg = 'success';
 						}
 					}
 				}
@@ -328,7 +348,7 @@ if (!empty($eventID)) {
 				</style>
 			</body>
 			</html>';
-	}else{
+	} else {
 		echo '<html>
 			<head>
 			</head>

@@ -11,6 +11,37 @@ $api_version_omise = $_GET['api_version_omise'];
 $username = '';
 $class = '';
 
+//$eventID = 93; // ซื้อ coin เท่ากับราคา class
+//$userID = 63;
+//$userSql = mysqli_query($con, "SELECT User, CoinAmt FROM user WHERE UserID = '" . $userID . "'");
+//while ($arr = mysqli_fetch_array($userSql, MYSQLI_ASSOC)) {
+//	$username = $arr['User'];
+//	$coinHave = $arr['CoinAmt'];
+////		foreach ($arr as $key => $val) {
+////			$username = $val;
+////		}
+//}
+////echo $username.'/'.$coinHave;
+//$eventSql = mysqli_query($con, "SELECT eventTitle, coin FROM student_course_class_activity WHERE eventID = '" . $eventID . "'");
+//$DataList = [];
+//$newArr = [];
+//$eventName = '';
+//$coin = '';
+//
+//while ($arr = mysqli_fetch_array($eventSql, MYSQLI_ASSOC)) {
+//	foreach ($arr as $key => $val) {
+//		$DataList[$key] = $val;
+//	}
+//	array_push($newArr, $DataList);
+//}
+//
+//foreach ($newArr as $key => $val) {
+//	$coin = $val['coin']-$coinHave;
+//	$eventName = $val['eventTitle'];
+//}
+//echo $coin;
+//exit();
+
 if (!empty($coinPackID)) {
 	$userSql = mysqli_query($con, "SELECT User FROM user WHERE UserID = '" . $userID . "'");
 	while ($arr = mysqli_fetch_array($userSql, MYSQLI_ASSOC)) {
@@ -167,11 +198,13 @@ if (!empty($coinPackID)) {
 	</html>';
 } else if (!empty($eventID)) {
 
-	$userSql = mysqli_query($con, "SELECT User FROM user WHERE UserID = '" . $userID . "'");
+	$userSql = mysqli_query($con, "SELECT User, CoinAmt FROM user WHERE UserID = '" . $userID . "'");
 	while ($arr = mysqli_fetch_array($userSql, MYSQLI_ASSOC)) {
-		foreach ($arr as $key => $val) {
-			$username = $val;
-		}
+		$username = $arr['User'];
+		$coinHave = $arr['CoinAmt'];
+//		foreach ($arr as $key => $val) {
+//			$username = $val;
+//		}
 	}
 
 	$eventSql = mysqli_query($con, "SELECT eventTitle, coin FROM student_course_class_activity WHERE eventID = '" . $eventID . "'");
@@ -179,6 +212,7 @@ if (!empty($coinPackID)) {
 	$newArr = [];
 	$eventName = '';
 	$coin = '';
+	$coinBuy = '';
 
 	while ($arr = mysqli_fetch_array($eventSql, MYSQLI_ASSOC)) {
 		foreach ($arr as $key => $val) {
@@ -188,6 +222,11 @@ if (!empty($coinPackID)) {
 	}
 
 	foreach ($newArr as $key => $val) {
+		if (!empty($coinHave)) {
+			$coinBuy = $val['coin'] - $coinHave;
+		}else{
+			$coinBuy = $val['coin'];
+		}
 		$coin = $val['coin'];
 		$eventName = $val['eventTitle'];
 	}
@@ -201,7 +240,7 @@ if (!empty($coinPackID)) {
 		}
 	}
 
-	$realBaht = $bathPerCoin * $coin;
+	$realBaht = $bathPerCoin * $coinBuy;
 	$bathArr = explode(".", $realBaht);
 //print_pre($bathArr);
 
@@ -260,7 +299,7 @@ if (!empty($coinPackID)) {
 												<label>COIN</label>
 											</div>
 											<div class="col-6" style="float: right">
-												<label>' . $coin . '</label>
+												<label>' . $coinBuy . '</label>
 											</div>
 										</div>
 									</div>
@@ -302,6 +341,7 @@ if (!empty($coinPackID)) {
 										  <input type="hidden" name="eventID" value="' . $eventID . '"/>
 										  <input type="hidden" name="eventName" value="' . $eventName . '"/>
 										  <input type="hidden" name="coin" value="' . $coin . '"/>
+										  <input type="hidden" name="coinBuy" value="' . $coinBuy . '"/>
 										  <input type="hidden" name="realBaht" value="' . $realBaht . '"/>
 									</form>
 								</div>

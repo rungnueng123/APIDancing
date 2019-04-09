@@ -144,6 +144,20 @@ if (!empty($_GET['token'])) {
 		}
 	}
 
+	if($output['message'] == 'verify fail'){
+		echo '<script language="javascript">';
+		echo 'alert("Verify Fail")';
+		echo '</script>';
+	}else if ($output['message'] = 'verify success'){
+		echo '<script language="javascript">';
+		echo 'alert("Verify Success")';
+		echo '</script>';
+	}else{
+		echo '<script language="javascript">';
+		echo 'alert("Something wrong happened! Please try again!")';
+		echo '</script>';
+	}
+
 	echo '<script>window.close();</script>';
 	exit();
 }
